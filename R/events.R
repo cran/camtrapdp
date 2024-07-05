@@ -4,8 +4,8 @@
 #' Package object.
 #' Only observations with `observationLevel == "event"` are considered.
 #'
-#' @inheritParams check_camtrapdp
-#' @return [tibble()] data frame with the events, containing the following
+#' @inheritParams print.camtrapdp
+#' @return [tibble::tibble()] data frame with the events, containing the following
 #'   columns:
 #'   - `deploymentID`
 #'   - `eventID`

@@ -7,11 +7,10 @@
 taxa(x)
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by
-\code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
 }
 \value{
-\code{\link[=tibble]{tibble()}} data frame with the taxonomic information, containing at
+\code{\link[tibble:tibble]{tibble::tibble()}} data frame with the taxonomic information, containing at
 least a \code{scientificName} column.
 }
 \description{

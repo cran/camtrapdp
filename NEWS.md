@@ -1,6 +1,17 @@
+# camtrapdp 0.3.1
+
+* Fix CRAN note (#102).
+
+# camtrapdp 0.3.0
+
+* New function `print()` prints a human-readable summary of the Camera Trap Data Package (#8).
+* Fix `fieldsEnclosedBy` issue in `meta.xml`, so GBIF occurrence processing correctly handles commas in fields (#95).
+* Fix CRAN note (#94).
+
 # camtrapdp 0.2.1
 
-* `write_dwc()` no longer writes to `"."` by default, since is not allowed by CRAN policies. The user needs to explicitly define a directory (#79).
+* First release on [CRAN](https://cran.r-project.org/package=camtrapdp). 🎉
+* `write_dwc()` no longer writes to `"."` by default, since this is not allowed by CRAN policies. The user needs to explicitly define a directory (#79).
 
 # camtrapdp 0.2.0
 

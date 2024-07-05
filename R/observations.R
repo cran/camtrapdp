@@ -8,8 +8,8 @@
 #'   It should only be used within other functions, where the expected data
 #'   structure can be guaranteed.
 #'
-#' @inheritParams check_camtrapdp
-#' @return [tibble()] data frame with observations.
+#' @inheritParams print.camtrapdp
+#' @return [tibble::tibble()] data frame with observations.
 #' @family accessor functions
 #' @export
 #' @examples

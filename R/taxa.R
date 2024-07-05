@@ -3,8 +3,8 @@
 #' Gets the (unique) scientific names and associated taxonomic information from
 #' the observations of a Camera Trap Data Package object.
 #'
-#' @inheritParams check_camtrapdp
-#' @return [tibble()] data frame with the taxonomic information, containing at
+#' @inheritParams print.camtrapdp
+#' @return [tibble::tibble()] data frame with the taxonomic information, containing at
 #'   least a `scientificName` column.
 #' @family accessor functions
 #' @export

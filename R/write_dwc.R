@@ -3,7 +3,7 @@
 #' Transforms a Camera Trap Data Package object to a [Darwin Core Archive](
 #' https://dwc.tdwg.org/text/).
 #'
-#' @inheritParams check_camtrapdp
+#' @inheritParams print.camtrapdp
 #' @param directory Path to local directory to write files to.
 #' @return CSV and `meta.xml` files written to disk.
 #'   And invisibly, a list of data frames with the transformed data.
@@ -13,9 +13,9 @@
 #' This function **follows recommendations** in Reyserhove et al. (2023)
 #' \doi{10.35035/doc-0qzp-2x37} and transform data to:
 #' - An [Occurrence core](
-#' https://docs.gbif.org/camera-trap-guide/en/#section-occurrence-core).
+#'   https://docs.gbif.org/camera-trap-guide/en/#section-occurrence-core).
 #' - An [Audubon/Audiovisual Media Description extension](
-#' https://docs.gbif.org/camera-trap-guide/en/#section-ac-extension).
+#'   https://docs.gbif.org/camera-trap-guide/en/#section-ac-extension).
 #' - A `meta.xml` file.
 #'
 #' Key features of the Darwin Core transformation:
