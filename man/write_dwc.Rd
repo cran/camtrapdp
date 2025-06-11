@@ -7,7 +7,7 @@
 write_dwc(x, directory)
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{\link[=read_camtrapdp]{read_camtrapdp()}}.}
 
 \item{directory}{Path to local directory to write files to.}
 }
@@ -32,9 +32,15 @@ Key features of the Darwin Core transformation:
 \itemize{
 \item The Occurrence core contains one row per observation
 (\code{dwc:occurrenceID = observationID}).
-\item Only observations with \code{observationType = "animal"} and
-\code{observationLevel = "event"} are included, thus excluding observations that
-are (of) humans, vehicles, blanks, unknowns, unclassified and media-based.
+\item Only observations with \code{observationType = "animal"} and are included, thus
+excluding observations that are (of) humans, vehicles, blanks, unknowns and
+unclassified.
+\item Either observations with \code{observationLevel = "event"} or \code{"media"} are
+used, never both to avoid duplicates.
+The level be defined with \code{x$gbifIngestion$observationLevel},
+with \code{"event"} as default.
+\item Observations classified by humans with 100\% certainty get a
+\code{dwc:identificationVerificationStatus = "verified using recorded media"}.
 \item Deployment information is included in the Occurrence core, such as
 location, habitat, \code{dwc:samplingProtocol}, deployment duration in
 \code{dwc:samplingEffort} and \code{dwc:parentEventID = deploymentID} as grouping
@@ -44,17 +50,18 @@ identifier.
 \item Media files are included in the Audubon/Audiovisual Media Description
 extension, with a foreign key to the observation.
 A media file that is used for more than one observation is repeated.
-\item Metadata is used to set the following record-level terms:
+\item Metadata are used to set the following record-level terms:
 \itemize{
-\item \code{dwc:datasetID = id}.
-\item \code{dwc:datasetName = title}.
-\item \code{dwc:collectionCode}: first source in \code{sources}.
-\item \code{dcterms:license}: license (\code{name}) in \code{licenses} with scope \code{data}.
-The license (\code{name}) with scope \code{media} is used as \code{dcterms:rights} in
-the Audubon Media Description extension.
-\item \code{dcterms:rightsHolder}: first contributor in \code{contributors} with role
+\item \code{dwc:datasetID}: \code{x$id}.
+\item \code{dwc:datasetName}: \code{x$title}.
+\item \code{dwc:collectionCode}: first source in \code{x$sources}.
+\item \code{dcterms:license}: license \code{name} (e.g. \code{CC0-1.0}) in \code{x$licenses} with
+scope \code{data}.
+The license \code{name} with scope \code{media} is used as \code{dcterms:rights} in the
+Audubon Media Description extension.
+\item \code{dcterms:rightsHolder}: first contributor in \code{x$contributors} with role
 \code{rightsHolder}.
-\item \code{dwc:dataGeneralizations}: set if \code{coordinatePrecision} is defined.
+\item \code{dwc:dataGeneralizations}: set if \code{x$coordinatePrecision} is defined.
 }
 }
 }
@@ -65,5 +72,13 @@ write_dwc(x, directory = "my_directory")
 
 # Clean up (don't do this if you want to keep your files)
 unlink("my_directory", recursive = TRUE)
+}
+\seealso{
+Other transformation functions: 
+\code{\link{merge_camtrapdp}()},
+\code{\link{round_coordinates}()},
+\code{\link{shift_time}()},
+\code{\link{update_taxon}()},
+\code{\link{write_eml}()}
 }
 \concept{transformation functions}

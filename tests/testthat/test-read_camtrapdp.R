@@ -25,12 +25,20 @@ test_that("read_camtrapdp() returns error on unsupported Camtrap DP version", {
   )
 })
 
-test_that("read_camtrapdp() does not convert 1.0", {
+test_that("read_camtrapdp() upgrades 1.0", {
   skip_if_offline()
   camtrapdp_1.0 <-
     "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0/example/datapackage.json"
   x <- read_camtrapdp(camtrapdp_1.0)
-  expect_identical(version(x), "1.0")
+  expect_identical(version(x), "1.0.1")
+})
+
+test_that("read_camtrapdp() does not upgrade 1.0.1", {
+  skip_if_offline()
+  camtrapdp_1.0.1 <-
+    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.1/example/datapackage.json"
+  x <- read_camtrapdp(camtrapdp_1.0.1)
+  expect_identical(version(x), "1.0.1")
 })
 
 test_that("read_camtrapdp() adds eventIDs to media", {
@@ -48,4 +56,22 @@ test_that("read_camtrapdp() adds eventIDs to media", {
     nrow(media(x)),
     nrow(dplyr::distinct(media(x), mediaID)),
   )
+})
+
+test_that("read_camtrapdp() creates scopes if missing", {
+  skip_if_offline()
+  temp_dir <- file.path(tempdir(), "no_scopes")
+  on.exit(unlink(temp_dir, recursive = TRUE))
+  no_scopes <- frictionless::read_package(
+    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0/example/datapackage.json"
+  )
+  no_scopes$spatial <- NULL
+  no_scopes$temporal <- NULL
+  no_scopes$taxonomic <- NULL
+  suppressMessages(frictionless::write_package(no_scopes, temp_dir))
+
+  x <- read_camtrapdp(file.path(temp_dir, "datapackage.json"))
+  expect_type(x$spatial, "list")
+  expect_type(x$temporal, "list")
+  expect_type(x$taxonomic, "list")
 })

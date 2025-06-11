@@ -7,15 +7,18 @@
 taxa(x)
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{\link[=read_camtrapdp]{read_camtrapdp()}}.}
 }
 \value{
-\code{\link[tibble:tibble]{tibble::tibble()}} data frame with the taxonomic information, containing at
-least a \code{scientificName} column.
+A \code{\link[tibble:tibble]{tibble::tibble()}} data frame with the taxonomic information,
+containing at least a \code{scientificName} column.
 }
 \description{
 Gets the (unique) scientific names and associated taxonomic information from
 the observations of a Camera Trap Data Package object.
+Duplicate taxa (i.e. with the same \code{scientificName}) are removed, retaining
+the taxon with (first) a \code{taxonID} and (second) the most taxonomic
+information.
 }
 \examples{
 x <- example_dataset()
@@ -23,8 +26,10 @@ taxa(x)
 }
 \seealso{
 Other accessor functions: 
+\code{\link{contributors}()},
 \code{\link{deployments}()},
 \code{\link{events}()},
+\code{\link{individuals}()},
 \code{\link{locations}()},
 \code{\link{media}()},
 \code{\link{observations}()}

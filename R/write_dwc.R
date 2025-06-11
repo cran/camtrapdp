@@ -21,9 +21,15 @@
 #' Key features of the Darwin Core transformation:
 #' - The Occurrence core contains one row per observation
 #'   (`dwc:occurrenceID = observationID`).
-#' - Only observations with `observationType = "animal"` and
-#'   `observationLevel = "event"` are included, thus excluding observations that
-#'   are (of) humans, vehicles, blanks, unknowns, unclassified and media-based.
+#' - Only observations with `observationType = "animal"` and are included, thus
+#'   excluding observations that are (of) humans, vehicles, blanks, unknowns and
+#'   unclassified.
+#' - Either observations with `observationLevel = "event"` or `"media"` are
+#'   used, never both to avoid duplicates.
+#'   The level be defined with `x$gbifIngestion$observationLevel`,
+#'   with `"event"` as default.
+#' - Observations classified by humans with 100% certainty get a
+#'   `dwc:identificationVerificationStatus = "verified using recorded media"`.
 #' - Deployment information is included in the Occurrence core, such as
 #'   location, habitat, `dwc:samplingProtocol`, deployment duration in
 #'   `dwc:samplingEffort` and `dwc:parentEventID = deploymentID` as grouping
@@ -33,16 +39,17 @@
 #' - Media files are included in the Audubon/Audiovisual Media Description
 #'   extension, with a foreign key to the observation.
 #'   A media file that is used for more than one observation is repeated.
-#' - Metadata is used to set the following record-level terms:
-#'   - `dwc:datasetID = id`.
-#'   - `dwc:datasetName = title`.
-#'   - `dwc:collectionCode`: first source in `sources`.
-#'   - `dcterms:license`: license (`name`) in `licenses` with scope `data`.
-#'     The license (`name`) with scope `media` is used as `dcterms:rights` in
-#'     the Audubon Media Description extension.
-#'   - `dcterms:rightsHolder`: first contributor in `contributors` with role
+#' - Metadata are used to set the following record-level terms:
+#'   - `dwc:datasetID`: `x$id`.
+#'   - `dwc:datasetName`: `x$title`.
+#'   - `dwc:collectionCode`: first source in `x$sources`.
+#'   - `dcterms:license`: license `name` (e.g. `CC0-1.0`) in `x$licenses` with
+#'     scope `data`.
+#'     The license `name` with scope `media` is used as `dcterms:rights` in the
+#'     Audubon Media Description extension.
+#'   - `dcterms:rightsHolder`: first contributor in `x$contributors` with role
 #'     `rightsHolder`.
-#'   - `dwc:dataGeneralizations`: set if `coordinatePrecision` is defined.
+#'   - `dwc:dataGeneralizations`: set if `x$coordinatePrecision` is defined.
 #' @examples
 #' x <- example_dataset()
 #' write_dwc(x, directory = "my_directory")
@@ -53,37 +60,50 @@ write_dwc <- function(x, directory) {
   check_camtrapdp(x)
 
   # Set properties from metadata or default to NA when missing
-  dataset_name <- purrr::pluck(x, "title", .default = NA)
-  dataset_id <- purrr::pluck(x, "id", .default = NA)
-  collection_code <- purrr::pluck(x, "sources", 1, "title", .default = NA)
+  dataset_name <- purrr::pluck(x, "title", .default = NA_character_)
+  dataset_id <- purrr::pluck(x, "id", .default = NA_character_)
+  collection_code <-
+    purrr::pluck(x, "sources", 1, "title", .default = NA_character_)
   license <-
     purrr::pluck(x, "licenses") %>%
     purrr::detect(~ !is.null(.x$scope) && .x$scope == "data") %>%
-    purrr::pluck("name", .default = NA)
+    purrr::pluck("name", .default = NA_character_)
   media_license <-
     purrr::pluck(x, "licenses") %>%
     purrr::detect(~ !is.null(.x$scope) && .x$scope == "media") %>%
-    purrr::pluck("name", .default = NA)
+    purrr::pluck("name", .default = NA_character_)
   rights_holder <-
     purrr::pluck(x, "contributors") %>%
     purrr::detect(~ !is.null(.x$role) && .x$role == "rightsHolder") %>%
-    purrr::pluck("title", .default = NA)
-  coordinate_precision <- purrr::pluck(x, "coordinatePrecision", .default = NA)
+    purrr::pluck("title", .default = NA_character_)
+  coordinate_precision <-
+    purrr::pluck(x, "coordinatePrecision", .default = NA_character_)
 
   # Filter dataset on observations (also affects media)
+  observation_level <- dplyr::if_else(
+    x$gbifIngestion$observationLevel %||% "" == "media", "media", "event"
+  )
   x <- filter_observations(
     x,
-    .data$observationLevel == "event",
+    .data$observationLevel == observation_level,
     .data$observationType == "animal"
   )
 
   # Start transformation
-  cli::cli_h2("Transforming data to Darwin Core")
+  cli::cli_h2(
+    "Transforming data to Darwin Core ({observation_level}-based observations)"
+  )
+
+  # Read data and add optional columns that are used in transformation
+ deployments <- deployments(x)
+ media <- media(x)
+ observations_cols <- c("taxon.taxonID")
+ observations <- expand_cols(observations(x), observations_cols)
 
   # Create Darwin Core Occurrence core
   occurrence <-
-    observations(x) %>%
-    dplyr::left_join(deployments(x), by = "deploymentID") %>%
+    observations %>%
+    dplyr::left_join(deployments, by = "deploymentID") %>%
     dplyr::arrange(.data$deploymentID, .data$eventStart) %>%
     dplyr::mutate(
       .keep = "none",
@@ -136,31 +156,32 @@ write_dwc <- function(x, directory) {
       ),
       eventRemarks = paste0(
         # E.g. "camera trap with bait near burrow | tags: <t1, t2> | <comment>"
-        dplyr::if_else(
-          .data$baitUse,
-          "camera trap with bait",
-          "camera trap without bait"
-        ),
+        dplyr::case_when(
+          .data$baitUse == TRUE ~ "camera trap with bait",
+          .data$baitUse == FALSE ~ "camera trap without bait",
+          is.na(.data$baitUse) & !is.na(.data$featureType) ~ "camera trap",
+          is.na(.data$baitUse) & is.na(.data$featureType) ~ ""
+          ),
         dplyr::if_else(
           is.na(.data$featureType),
           "",
           paste0(
             " near ",
-            dplyr::recode(
+            dplyr::case_match(
               .data$featureType,
-              "roadPaved" = "paved road",
-              "roadDirt" = "dirt road",
-              "trailHiking" = "hiking trail",
-              "trailGame" = "game trail",
-              "roadUnderpass" = "road underpass",
-              "roadOverpass" = "road overpass",
-              "roadBridge" = "road bridge",
-              "culvert" = "culvert",
-              "burrow" = "burrow",
-              "nestSite" = "nest site",
-              "carcass" = "carcass",
-              "waterSource" = "water source",
-              "fruitingTree" = "fruiting tree"
+              "roadPaved" ~ "paved road",
+              "roadDirt" ~ "dirt road",
+              "trailHiking" ~ "hiking trail",
+              "trailGame" ~ "game trail",
+              "roadUnderpass" ~ "road underpass",
+              "roadOverpass" ~ "road overpass",
+              "roadBridge" ~ "road bridge",
+              "culvert" ~ "culvert",
+              "burrow" ~ "burrow",
+              "nestSite" ~ "nest site",
+              "carcass" ~ "carcass",
+              "waterSource" ~ "water source",
+              "fruitingTree" ~ "fruiting tree"
             )
           )
         ),
@@ -191,6 +212,12 @@ write_dwc <- function(x, directory) {
         .data$classificationTimestamp,
         format = "%Y-%m-%dT%H:%M:%SZ"
       ),
+      identificationVerificationStatus = dplyr::if_else(
+        .data$classificationMethod == "human" &
+        .data$classificationProbability == 1,
+        "verified using recorded media",
+        NA_character_
+      ),
       identificationRemarks = paste0(
         # E.g. "classified by a machine with 89% certainty"
         dplyr::if_else(
@@ -201,7 +228,10 @@ write_dwc <- function(x, directory) {
         dplyr::if_else(
           is.na(.data$classificationProbability),
           "",
-          paste0(" with ", .data$classificationProbability * 100, "% certainty")
+          paste0(
+            " with ", as.numeric(.data$classificationProbability) * 100,
+            "% certainty"
+          )
         )
       ),
       taxonID = .data$taxon.taxonID,
@@ -219,20 +249,29 @@ write_dwc <- function(x, directory) {
       "maximumDistanceAboveSurfaceInMeters", "decimalLatitude",
       "decimalLongitude", "geodeticDatum", "coordinateUncertaintyInMeters",
       "coordinatePrecision", "identifiedBy", "dateIdentified",
-      "identificationRemarks", "taxonID", "scientificName", "kingdom"
+      "identificationVerificationStatus", "identificationRemarks", "taxonID",
+      "scientificName", "kingdom"
     )
 
   # Create Audubon/Audiovisual Media Description extension
+  if (observation_level == "media") {
+    drop_col <- "eventID"
+    join_by <- c("deploymentID", "mediaID")
+  } else {
+    drop_col <- "mediaID"
+    join_by <- c("deploymentID", "eventID")
+  }
+
   multimedia <-
-    observations(x) %>%
-    dplyr::select(-"mediaID") %>%
+    observations %>%
+    dplyr::select(-drop_col) %>%
     dplyr::left_join(
-      media(x),
-      by = c("deploymentID", "eventID"),
+      media,
+      by = join_by,
       relationship = "many-to-many" # Silence warning
     ) %>%
     dplyr::left_join(
-      deployments(x),
+      deployments,
       by = "deploymentID"
     ) %>%
     dplyr::arrange(.data$deploymentID, .data$timestamp, .data$fileName) %>%
@@ -253,17 +292,17 @@ write_dwc <- function(x, directory) {
       `dcterms:rights` = media_license,
       CreateDate = format(.data$timestamp, format = "%Y-%m-%dT%H:%M:%SZ"),
       captureDevice = .data$cameraModel,
-      resourceCreationTechnique = dplyr::recode(
+      resourceCreationTechnique = dplyr::case_match(
         .data$captureMethod,
-        "activityDetection" = "activity detection",
-        "timeLapse" = "time lapse"
+        "activityDetection" ~ "activity detection",
+        "timeLapse" ~ "time lapse"
       ),
       accessURI = .data$filePath,
       `dc:format` = .data$fileMediatype,
-      serviceExpectation = dplyr::if_else(
-        .data$filePublic,
-        "online",
-        "authenticate"
+      serviceExpectation = dplyr::case_when(
+        !as.logical(.data$filePublic) ~ "authenticate",
+        stringr::str_detect(.data$filePath, "^http") ~ "online",
+        .default = "local"
       )
     ) %>%
     dplyr::select(

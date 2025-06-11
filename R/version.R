@@ -11,9 +11,9 @@
 #' 3. `x$profile` in its entirety (can be `NULL`).
 #'
 #' @param x Camera Trap Data Package object, as returned by
-#'   `read_camtrapdp()`.
+#'   [read_camtrapdp()].
 #'   Also works on a Frictionless Data Package, as returned by
-#'   `frictionless::read_package()`.
+#'   [frictionless::read_package()].
 #' @return Camtrap DP version number (e.g. `1.0`).
 #' @family misc functions
 #' @export
@@ -28,10 +28,7 @@ version <- function(x) {
   }
 
   # Get version from profile
-  profile <- x$profile
-  if (is.null(profile)) {
-    return(NA)
-  }
+  profile <- purrr::pluck(x, "profile", .default = NA)
 
   # Find pattern "camtrap-dp/<version>/" in e.g.
   # https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0/camtrap-dp-profile.json
@@ -45,4 +42,28 @@ version <- function(x) {
   } else {
     profile
   }
+}
+
+#' @rdname version
+#' @param value Version number to assign to `x`.
+#' @noRd
+"version<-" <- function(x, value) {
+  old <- version(x)
+  new <- value
+
+  # Update profile
+  x$profile <- sub(old, new, x$profile, fixed = TRUE)
+
+  # Update resource schemas
+  resource_names <- c("deployments", "media", "observations")
+  x$resources <- purrr::map(x$resources, function(resource) {
+    if (resource$name %in% resource_names) {
+      resource$schema <- sub(old, new, resource$schema, fixed = TRUE)
+    }
+    resource
+  })
+
+  # Update version
+  attr(x, "version") <- new
+  return(x)
 }

@@ -7,11 +7,11 @@
 events(x)
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{\link[=read_camtrapdp]{read_camtrapdp()}}.}
 }
 \value{
-\code{\link[tibble:tibble]{tibble::tibble()}} data frame with the events, containing the following
-columns:
+A \code{\link[tibble:tibble]{tibble::tibble()}} data frame with the events, containing the
+following columns:
 \itemize{
 \item \code{deploymentID}
 \item \code{eventID}
@@ -30,7 +30,9 @@ events(x)
 }
 \seealso{
 Other accessor functions: 
+\code{\link{contributors}()},
 \code{\link{deployments}()},
+\code{\link{individuals}()},
 \code{\link{locations}()},
 \code{\link{media}()},
 \code{\link{observations}()},

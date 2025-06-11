@@ -10,19 +10,21 @@ media(x)
 media(x) <- value
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{\link[=read_camtrapdp]{read_camtrapdp()}}.}
 
 \item{value}{A data frame to assign as media.}
 }
 \value{
-\code{\link[tibble:tibble]{tibble::tibble()}} data frame with media.
+A \code{\link[tibble:tibble]{tibble::tibble()}} data frame with media.
 }
 \description{
 \code{media()} gets the media from a Camera Trap Data Package object.
 
-\verb{media<-()} is the assignment equivalent.
-It should only be used within other functions, where the expected data
+\verb{media()<-} is the assignment equivalent.
+\itemize{
+\item It should only be used within other functions, where the expected data
 structure can be guaranteed.
+}
 }
 \examples{
 x <- example_dataset()
@@ -34,8 +36,10 @@ media(x) <- head(media(x), 1)
 }
 \seealso{
 Other accessor functions: 
+\code{\link{contributors}()},
 \code{\link{deployments}()},
 \code{\link{events}()},
+\code{\link{individuals}()},
 \code{\link{locations}()},
 \code{\link{observations}()},
 \code{\link{taxa}()}

@@ -3,27 +3,30 @@
 \name{observations}
 \alias{observations}
 \alias{observations<-}
-\title{Get observations}
+\title{Get or set observations}
 \usage{
 observations(x)
 
 observations(x) <- value
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{\link[=read_camtrapdp]{read_camtrapdp()}}.}
 
 \item{value}{A data frame to assign as observations.}
 }
 \value{
-\code{\link[tibble:tibble]{tibble::tibble()}} data frame with observations.
+A \code{\link[tibble:tibble]{tibble::tibble()}} data frame with observations.
 }
 \description{
 \code{observations()} gets the observations from a Camera Trap Data Package
 object.
 
-\verb{observations<-()} is the assignment equivalent.
-It should only be used within other functions, where the expected data
+\verb{observations()<-} is the assignment equivalent.
+\itemize{
+\item It should only be used within other functions, where the expected data
 structure can be guaranteed.
+\item Metadata (\code{x$taxonomic}) are updated to match the assigned observations.
+}
 }
 \examples{
 x <- example_dataset()
@@ -35,8 +38,10 @@ observations(x) <- head(observations(x), 1)
 }
 \seealso{
 Other accessor functions: 
+\code{\link{contributors}()},
 \code{\link{deployments}()},
 \code{\link{events}()},
+\code{\link{individuals}()},
 \code{\link{locations}()},
 \code{\link{media}()},
 \code{\link{taxa}()}

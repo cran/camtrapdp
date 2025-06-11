@@ -10,12 +10,42 @@ read_camtrapdp(file)
 \item{file}{Path or URL to a \code{datapackage.json} file.}
 }
 \value{
-Camera Trap Data Package object.
+A Camera Trap Data Package object.
 }
 \description{
-Reads files from a \href{https://camtrap-dp.tdwg.org}{Camera Trap Data Package (Camtrap DP)} into memory.
+Reads a \href{https://camtrap-dp.tdwg.org}{Camera Trap Data Package (Camtrap DP)}
+dataset into memory.
 }
-\section{Assign taxonomic information}{
+\section{Older versions}{
+
+
+The \code{read_camtrapdp()} function supports older versions of Camtrap DP and
+will automatically \strong{upgrade} such datasets to the latest version of the
+standard.
+It currently supports versions 1.0 and 1.0.1 (latest).
+}
+
+\section{Events}{
+
+
+Observations can contain classifications at two levels:
+\itemize{
+\item \strong{Media-based} observations (\code{observationLevel = "media"}) are based on a
+single media file and are directly linked to it via \code{mediaID}.
+\item \strong{Event-based} observations (\code{observationLevel = "event"}) are based on an
+event, defined as a combination of \code{eventID}, \code{eventStart} and \code{eventEnd}.
+This event can consist of one or more media files, but is not directly linked
+to these.
+}
+
+The \code{read_camtrapdp()} function \strong{will automatically assign \code{eventID}s to
+media}, using \code{media.deploymentID = observations.deploymentID} and
+\verb{observations.eventStart <= media.timestamp <= observations.eventEnd}.
+Note that this can result in media being linked to multiple events (and thus
+being duplicated), for example when events and sub-events were defined.
+}
+
+\section{Taxonomic information}{
 
 
 Camtrap DP metadata has a \code{taxonomic} property that can contain extra
@@ -23,27 +53,34 @@ information for each \code{scientificName} found in observations.
 Such information can include higher taxonomy (\code{family}, \code{order}, etc.) and
 vernacular names in multiple languages.
 
-This function \strong{will automatically include this taxonomic information in
-observations}, as extra columns starting with \code{taxon.}.
+The \code{read_camtrapdp()} function \strong{will automatically include this taxonomic
+information in observations}, as extra columns starting with \code{taxon.}.
+It will then update the \code{taxonomic} scope in the metadata to the unique
+\code{\link[=taxa]{taxa()}} found in the data.
 }
 
-\section{Assign eventIDs}{
+\section{Spatial/temporal coverage}{
 
 
-Observations can contain two classifications at two levels:
+Camtrap DP metadata has a \code{spatial} and \code{temporal} property that contains the
+spatial and temporal coverage of the package respectively.
 
-\strong{Media-based} observations (\code{observationLevel = "media"}) are based on a
-single media file and are directly linked to it via \code{mediaID}.
+The \code{read_camtrapdp()} function \strong{will automatically update (or create) the
+spatial and temporal scopes} in the metadata based on the data.
+It also does this for the taxonomic scope (see higher).
+}
 
-\strong{Event-based} observations (\code{observationLevel = "event"}) are based on an
-event, defined as a combination of \code{eventID}, \code{eventStart} and \code{eventEnd}.
-This event can consist of one or more media files, but is not directly linked
-to these.
+\section{Additional resources}{
 
-This function \strong{will automatically assign \code{eventID}s to media}, using
-\code{media.deploymentID = event.deploymentID} and \verb{eventStart <= media.timestamp <= eventEnd}.
-Note that this can result in media being linked to multiple events (and thus
-being duplicated), for example when events and sub-events were defined.
+
+A Camtrap DP can contain Data Resources not described by the standard.
+Those are listed with the tables supported by the standard (i.e. deployments,
+media, observations) in the \code{resources} property.
+
+The \code{read_camtrapdp()} function will \strong{ignore these additional resources}
+and only read the tables described by the standard.
+Additional resources can be read with \code{\link[frictionless:read_resource]{frictionless::read_resource()}} if they
+are tabular.
 }
 
 \examples{

@@ -3,12 +3,12 @@
 #' @description
 #' `media()` gets the media from a Camera Trap Data Package object.
 #'
-#' `media<-()` is the assignment equivalent.
-#'   It should only be used within other functions, where the expected data
-#'   structure can be guaranteed.
+#' `media()<-` is the assignment equivalent.
+#' - It should only be used within other functions, where the expected data
+#' structure can be guaranteed.
 #'
 #' @inheritParams print.camtrapdp
-#' @return [tibble::tibble()] data frame with media.
+#' @return A [tibble::tibble()] data frame with media.
 #' @family accessor functions
 #' @export
 #' @examples

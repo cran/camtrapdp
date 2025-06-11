@@ -1,10 +1,13 @@
 #' Filter deployments
 #'
+#' @description
 #' Subsets deployments in a Camera Trap Data Package object, retaining all
 #' rows that satisfy the conditions.
 #'
 #' - Media are filtered on associated `deploymentID`.
 #' - Observations are filtered on associated `deploymentID`.
+#' - Metadata (`x$spatial`, `x$temporal` and `x$taxonomic`) are updated to match
+#' the filtered deployments.
 #'
 #' @inheritParams print.camtrapdp
 #' @param ... Filtering conditions, see `dplyr::filter()`.
@@ -55,7 +58,7 @@ filter_deployments <- function(x, ...) {
     observations(x) %>%
     dplyr::filter(.data$deploymentID %in% deployments$deploymentID)
 
-  # Assign filtered data
+  # Assign filtered data (also updates spatial, temporal and taxonomic scope)
   deployments(x) <- deployments
   media(x) <- media
   observations(x) <- observations

@@ -7,7 +7,7 @@
 filter_deployments(x, ...)
 }
 \arguments{
-\item{x}{Camera Trap Data Package object, as returned by \code{read_camtrapdp()}.}
+\item{x}{Camera Trap Data Package object, as returned by \code{\link[=read_camtrapdp]{read_camtrapdp()}}.}
 
 \item{...}{Filtering conditions, see \code{dplyr::filter()}.}
 }
@@ -17,11 +17,11 @@ filter_deployments(x, ...)
 \description{
 Subsets deployments in a Camera Trap Data Package object, retaining all
 rows that satisfy the conditions.
-}
-\details{
 \itemize{
 \item Media are filtered on associated \code{deploymentID}.
 \item Observations are filtered on associated \code{deploymentID}.
+\item Metadata (\code{x$spatial}, \code{x$temporal} and \code{x$taxonomic}) are updated to match
+the filtered deployments.
 }
 }
 \examples{
