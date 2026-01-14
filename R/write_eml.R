@@ -77,21 +77,21 @@ write_eml <- function(x, directory, derived_paragraph = TRUE) {
 
   # Set abstract, with optional extra paragraph
   para <-
-    # Split description per line, remove empty lines, wrap each line in <p></p>
+    # Split description per line/<p>, remove empty lines, assign as <para>s
     unlist(strsplit(x$description, "<p>|</p>|\n")) %>%
-    purrr::discard(~ .x == "") %>%
-    purrr::map_chr(~ paste0("<p>", ., "</p>"))
+    purrr::discard(~ .x == "")
   if (derived_paragraph) {
     last_para <- paste0(
-      "<p>Data have been standardized to Darwin Core using the ",
-      "<a href=\"https://inbo.github.io/camtrapdp/\">camtrapdp</a> R package ",
-      "and only include observations (and associated media) of animals. ",
-      "Excluded are records that document blank or unclassified media, ",
-      "vehicles and observations of humans.</p>"
+      "Data have been standardized to Darwin Core using the ",
+      "<ulink url=\"https://inbo.github.io/camtrapdp/\">",
+      "<citetitle>camtrapdp</citetitle></ulink> R package and only include ",
+      "observations (and associated media) of animals. Excluded are records ",
+      "that document blank or unclassified media vehicles and observations of ",
+      "humans."
     )
     para <- append(para, last_para)
   }
-  eml$dataset$abstract$para <- paste0(para, collapse = "")
+  eml$dataset$abstract$para <- para
 
   # Set update frequency (requires a description, even if empty)
   eml$dataset$maintenance <- list(

@@ -38,18 +38,18 @@ test_that("write_camtrapdp() writes the unaltered example dataset as is", {
 
   # datapackage.json
   original_datapackage <- jsonlite::fromJSON(
-    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.1/example/datapackage.json",
+    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.2/example/datapackage.json",
     simplifyDataFrame = FALSE, simplifyVector = TRUE
-    )
+  )
   written_datapackage <- jsonlite::fromJSON(
     file.path(temp_dir, "datapackage.json"),
     simplifyDataFrame = FALSE, simplifyVector = TRUE
-    )
+  )
   expect_identical(written_datapackage, original_datapackage)
 
   # deployments.csv
   original_deployments <- suppressMessages(readr::read_delim(
-    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.1/example/deployments.csv",
+    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.2/example/deployments.csv",
     delim = ","
   ))
   written_deployments <- suppressMessages(readr::read_delim(
@@ -59,7 +59,7 @@ test_that("write_camtrapdp() writes the unaltered example dataset as is", {
 
   # media.csv
   original_media <- suppressMessages(readr::read_delim(
-    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.1/example/media.csv",
+    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.2/example/media.csv",
     delim = ","
   ))
   written_media <- suppressMessages(readr::read_delim(
@@ -69,7 +69,7 @@ test_that("write_camtrapdp() writes the unaltered example dataset as is", {
 
   # observations.csv
   original_observations <- suppressMessages(readr::read_delim(
-    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.1/example/observations.csv",
+    "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.2/example/observations.csv",
     delim = ","
   ))
   written_observations <- suppressMessages(readr::read_delim(
@@ -90,4 +90,28 @@ test_that("write_camtrapdp() can write compressed files", {
     c("datapackage.json", "deployments.csv.gz", "media.csv.gz",
       "observations.csv.gz")
   )
+})
+
+test_that("write_camtrapdp() returns the expected datapackage.json for the
+           example dataset", {
+  skip_if_offline()
+  x <- example_dataset()
+  temp_dir <- tempdir()
+  on.exit(unlink(temp_dir, recursive = TRUE))
+
+  # Adapt x$taxonomic and x$contributors to test for https://github.com/inbo/camtrapdp/issues/185
+  x <- x %>%
+    update_taxon(
+      from = "Anas platyrhynchos",
+      to = list(
+        scientificName = "Anas platyrhynchos",
+        taxonID = "https://www.checklistbank.org/dataset/COL2023/taxon/DGP6",
+        taxonRank = "species",
+        vernacularNames.nld = "wilde eend" # Assigns NA for vernacularNames.eng
+      )
+    )
+  contributors(x) <- contributors(x) # Assigns NA for e.g. firstName of INBO
+  write_camtrapdp(x, temp_dir)
+
+  expect_snapshot_file(file.path(temp_dir, "datapackage.json"))
 })

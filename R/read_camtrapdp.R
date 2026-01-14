@@ -8,7 +8,7 @@
 #' The `read_camtrapdp()` function supports older versions of Camtrap DP and
 #' will automatically **upgrade** such datasets to the latest version of the
 #' standard.
-#' It currently supports versions 1.0 and 1.0.1 (latest).
+#' It currently supports versions 1.0, 1.0.1 and 1.0.2 (latest).
 #'
 #' @section Events:
 #'
@@ -64,7 +64,7 @@
 #' @family read functions
 #' @export
 #' @examples
-#' file <- "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0/example/datapackage.json"
+#' file <- "https://raw.githubusercontent.com/tdwg/camtrap-dp/1.0.2/example/datapackage.json"
 #' x <- read_camtrapdp(file)
 #' x
 read_camtrapdp <- function(file) {
@@ -73,12 +73,17 @@ read_camtrapdp <- function(file) {
 
   # Check version
   version <- version(package)
-  supported_versions <- c("1.0", "1.0.1")
+  supported_versions <- c("1.0", "1.0.1", "1.0.2")
+  camtrapdp_version <- utils::packageVersion("camtrapdp")
   if (!version %in% supported_versions) {
     cli::cli_abort(
       c(
-        "{.val {version}} is not a supported Camtrap DP version.",
-        "i" = "Supported version{?s}: {.val {supported_versions}}."
+        "Can't read a dataset that is referencing Camtrap DP version
+         {.val {version}}.",
+        "i" = "Supported Camtrap DP version{?s}: {.val {supported_versions}}.",
+        "i" = "You currently use {.pkg camtrapdp} {.val {camtrapdp_version}}.
+               Updating to the latest version with {.code
+               install.packages(\"camtrapdp\")} might resolve this error."
       ),
       class = "camtrapdp_error_unsupported_version"
     )
@@ -100,7 +105,7 @@ read_camtrapdp <- function(file) {
     frictionless::read_resource(package, "observations")
 
   # Upgrade
-  x <- upgrade(x, upgrade_to = "1.0.1")
+  x <- upgrade(x, upgrade_to = "1.0.2")
 
   # Add eventID to media
   media(x) <-
