@@ -4,7 +4,7 @@
 #' the deployment coordinates or `NULL` if there are no deployments.
 #'
 #' @inheritParams print.camtrapdp
-#' @return `x` with updated spatial metadata.
+#' @returns `x` with updated spatial metadata.
 #' @family helper functions
 #' @noRd
 update_spatial <- function(x) {
@@ -39,7 +39,7 @@ update_spatial <- function(x) {
 #' Sets `x$temporal` to `NULL` if there are no deployments.
 #'
 #' @inheritParams print.camtrapdp
-#' @return `x` with updated temporal metadata.
+#' @returns `x` with updated temporal metadata.
 #' @family helper functions
 #' @noRd
 update_temporal <- function(x) {
@@ -51,14 +51,14 @@ update_temporal <- function(x) {
   }
 
   x$temporal$start <-
-    deployments %>%
-    dplyr::pull(.data$deploymentStart) %>%
-    min() %>%
+    deployments |>
+    dplyr::pull(.data$deploymentStart) |>
+    min() |>
     format(format = "%Y-%m-%d")
   x$temporal$end <-
-    deployments %>%
-    dplyr::pull(.data$deploymentEnd) %>%
-    max() %>%
+    deployments |>
+    dplyr::pull(.data$deploymentEnd) |>
+    max() |>
     format(format = "%Y-%m-%d")
   return(x)
 }
@@ -69,7 +69,7 @@ update_temporal <- function(x) {
 #' Sets `x$taxonomic` to `NULL` if there are no taxa/observations.
 #'
 #' @inheritParams print.camtrapdp
-#' @return `x` with updated taxonomic metadata.
+#' @returns `x` with updated taxonomic metadata.
 #' @family helper functions
 #' @noRd
 update_taxonomic <- function(x) {
@@ -81,21 +81,21 @@ update_taxonomic <- function(x) {
   }
 
   # Set taxonomic
-  x$taxonomic <- purrr::map(1:nrow(taxa), function(i) {
+  x$taxonomic <- purrr::map(seq_len(nrow(taxa)), function(i) {
     current_row <- taxa[i, ]
 
     # Create taxonomic list without vernacular names
     taxonomic_list <-
-      current_row %>%
-      dplyr::select(-dplyr::starts_with("vernacularNames")) %>%
+      current_row |>
+      dplyr::select(-dplyr::starts_with("vernacularNames")) |>
       as.list()
 
     if (any(startsWith(names(current_row), "vernacularNames"))) {
       # Group vernacular names
       vernacularNames <-
-        current_row %>%
-        dplyr::select(dplyr::starts_with("vernacularNames")) %>%
-        dplyr::rename_with(~ stringr::str_remove(.x, "^vernacularNames\\.")) %>%
+        current_row |>
+        dplyr::select(dplyr::starts_with("vernacularNames")) |>
+        dplyr::rename_with(~ stringr::str_remove(.x, "^vernacularNames\\.")) |>
         as.list()
 
       # Append to taxonomic list

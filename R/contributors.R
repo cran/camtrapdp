@@ -7,7 +7,7 @@
 #' `contributors()<-` is the assignment equivalent.
 #'
 #' @inheritParams print.camtrapdp
-#' @return A [tibble::tibble()] data frame with the contributors, containing the
+#' @returns A [tibble::tibble()] data frame with the contributors, containing the
 #'   following columns (columns absent in `x$contributors` will be created):
 #'   - `title`
 #'   - `firstName`: if absent, this will be set to the first word in `title`,
@@ -30,18 +30,18 @@
 #' contributors(x) <- head(contributors(x), 1)
 contributors <- function(x) {
   contributors <-
-    x$contributors %>%
-    purrr::map(as.data.frame, stringsAsFactors = FALSE) %>%
-    purrr::list_rbind() %>%
-    dplyr::as_tibble() %>%
+    x$contributors |>
+    purrr::map(as.data.frame, stringsAsFactors = FALSE) |>
+    purrr::list_rbind() |>
+    dplyr::as_tibble() |>
     mutate_if_missing(
       title = NA_character_,
       email = NA_character_,
       path = NA_character_,
       role = NA_character_,
       organization = NA_character_
-    ) %>%
-    mutate_person_names() %>%
+    ) |>
+    mutate_person_names() |>
     dplyr::select(
       "title",
       "firstName",

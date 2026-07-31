@@ -4,14 +4,14 @@
 #' Data Package object and returns it as a data frame.
 #'
 #' @inheritParams print.camtrapdp
-#' @return A [tibble::tibble()] data frame with the taxonomic information.
+#' @returns A [tibble::tibble()] data frame with the taxonomic information.
 #' @noRd
 taxonomic <- function(x) {
   # Extract the taxonomic information
   taxonomic_list <- purrr::pluck(x, "taxonomic")
 
-  # If there is no taxonomic information, return NULL
-  if (is.null(taxonomic_list)) {
+  # If taxonomic information is absent or empty, return NULL
+  if (is.null(taxonomic_list) || length(taxonomic_list) == 0) {
     return(NULL)
   }
 
@@ -21,9 +21,9 @@ taxonomic <- function(x) {
       taxonomic_list,
       purrr::list_flatten,
       name_spec = "{outer}.{inner}"
-    ) %>%
-    purrr::map(as.data.frame, stringsAsFactors = FALSE) %>%
-    purrr::list_rbind() %>%
+    ) |>
+    purrr::map(as.data.frame, stringsAsFactors = FALSE) |>
+    purrr::list_rbind() |>
     dplyr::as_tibble()
 
   # Warn if there are duplicate scientificNames

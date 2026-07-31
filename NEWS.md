@@ -1,3 +1,8 @@
+# camtrapdp 0.6.0
+
+* camtrapdp now relies on R >= 4.1.0 and uses base pipes (`|>` rather than `%>%`) (#209).
+* camtrapdp now relies on `{frictionless}` >= 1.3.0 (#217).
+
 # camtrapdp 0.5.0
 
 * `read_camtrapdp()` now upgrades datasets to Camtrap DP 1.0.2 (#183) and provides help for unsupported versions (#198).
@@ -25,7 +30,7 @@
 
 ## Transforming data
 
-* `write_dwc()` now adds `identificationVerificationStatus` for observations classified by humans with 100% certainty (#158).
+* `write_dwc()` now adds [`dwc:identificationVerificationStatus`](http://rs.tdwg.org/dwc/terms/identificationVerificationStatus) for observations classified by humans with 100% certainty (#158).
 * `write_dwc()` now allows to create occurrences from media-based observations (#172).
 * New `write_eml()` transforms Camtrap DP metadata to EML (#99). This function is used by GBIF to create metadata for a dataset page.
 * New `merge_camtrapdp()` allows to merge two datasets (#112). This can be useful to combine data from multiple studies.
@@ -58,10 +63,10 @@
 * New function `read_camtrapdp()` reads data files from a Camtrap DP into memory (#9). It will make the data easier to use, by assigning taxonomic information (found in the metadata) to the observations and `eventID`s (found in the observations) to the media (#37).
 * New accessor functions `deployments()`, `media()` and `observations()` return a data frame with the deployments, media and observations respectively (#29). These functions also have an assignment equivalent (#50).
 * New accessor functions `locations()`, `events()` and `taxa()` return a data frame with unique locations, events and taxa respectively (#22, #57, #17).
-* New functions `filter_deployments()`, `filter_observations()` and `filter_media()` allow to filter data. They work similarly to [dplyr](https://cran.r-project.org/package=dplyr)'s `filter()` (#23).
+* New functions `filter_deployments()`, `filter_observations()` and `filter_media()` allow to filter data. They work similarly to `{dplyr}`'s `filter()` (#23).
 * New function `write_dwc()` transforms a Camera Trap Data Package to a Darwin Core Archive (#55).
 * New function `example_package()` returns the latest Camtrap DP example dataset and caches the result (#24, #67).
 * New function `version()` allows to get the version of a camtrapdp object.
 * New internal function `check_camtrapdp()` validates a camtrapdp object (#34).
 * New internal function `convert()` converts camtrapdp objects to the latest version. This function is currently not used, as the only supported version is Camtrap DP 1.0 (#9).
-* [dplyr](https://cran.r-project.org/package=dplyr)'s pipe (`%>%`) is included in NAMESPACE, so you don’t have to load dplyr (or magrittr) to use it (#56). `%>%` and `.data` are imported at package level, so they can be used in functions without namespace (#37).
+* `{dplyr}`'s pipe (`%>%`) is included in NAMESPACE, so you don’t have to load dplyr (or magrittr) to use it (#56). `%>%` and `.data` are imported at package level, so they can be used in functions without namespace (#37).

@@ -60,7 +60,7 @@
 #' are tabular.
 #'
 #' @param file Path or URL to a `datapackage.json` file.
-#' @return A Camera Trap Data Package object.
+#' @returns A Camera Trap Data Package object.
 #' @family read functions
 #' @export
 #' @examples
@@ -117,7 +117,7 @@ read_camtrapdp <- function(file) {
         "timestamp" >= "eventStart",
         "timestamp" <= "eventEnd"
       )
-    ) %>%
+    ) |>
     dplyr::select(-"eventStart", -"eventEnd")
 
   # Add taxonomic info to observations
@@ -139,8 +139,8 @@ read_camtrapdp <- function(file) {
 
   # Update temporal and spatial scope in metadata
   x <-
-    x %>%
-    update_temporal() %>%
+    x |>
+    update_temporal() |>
     update_spatial()
 
   return(x)

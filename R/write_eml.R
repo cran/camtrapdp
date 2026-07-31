@@ -7,7 +7,7 @@
 #' @param directory Path to local directory to write files to.
 #' @param derived_paragraph If `TRUE`, a paragraph will be added to the
 #'   abstract, indicating that data have been transformed using `write_dwc()`.
-#' @return `eml.xml` file written to disk.
+#' @returns `eml.xml` file written to disk.
 #'   And invisibly, an [EML::eml] object.
 #' @family transformation functions
 #' @export
@@ -78,7 +78,7 @@ write_eml <- function(x, directory, derived_paragraph = TRUE) {
   # Set abstract, with optional extra paragraph
   para <-
     # Split description per line/<p>, remove empty lines, assign as <para>s
-    unlist(strsplit(x$description, "<p>|</p>|\n")) %>%
+    unlist(strsplit(x$description, "<p>|</p>|\n")) |>
     purrr::discard(~ .x == "")
   if (derived_paragraph) {
     last_para <- paste0(
@@ -101,7 +101,7 @@ write_eml <- function(x, directory, derived_paragraph = TRUE) {
 
   # Set creators
   creators <-
-    contributors(x) %>%
+    contributors(x) |>
     dplyr::filter(!.data$role %in% c("rightsHolder", "publisher"))
   eml$dataset$creator <- create_eml_contributors(creators)
 
@@ -169,7 +169,7 @@ write_eml <- function(x, directory, derived_paragraph = TRUE) {
     eml$dataset$coverage$taxonomicCoverage <-
       list(
         taxonomicClassification =
-          purrr::map(1:nrow(taxa), function(i) {
+          purrr::map(seq_len(nrow(taxa)), function(i) {
             current_row <- taxa[i, ]
             list(
               taxonRankName = current_row$taxonRank,
@@ -232,9 +232,9 @@ write_eml <- function(x, directory, derived_paragraph = TRUE) {
   # Write files
   eml_path <- file.path(directory, "eml.xml")
   cli::cli_h2("Writing file")
-  cli::cli_ul(c(
+  cli::cli_ul(
     "{.file {eml_path}}"
-  ))
+  )
   if (!dir.exists(directory)) {
     dir.create(directory, recursive = TRUE)
   }

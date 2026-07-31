@@ -4,7 +4,7 @@
 #' Package object.
 #'
 #' @inheritParams print.camtrapdp
-#' @return A [tibble::tibble()] data frame with the locations, containing the
+#' @returns A [tibble::tibble()] data frame with the locations, containing the
 #'   following columns:
 #'   - `locationID`
 #'   - `locationName`
@@ -18,7 +18,7 @@
 #' locations(x)
 locations <- function(x) {
   check_camtrapdp(x)
-  deployments(x) %>%
+  deployments(x) |>
     dplyr::distinct(
       .data$locationID,
       .data$locationName,

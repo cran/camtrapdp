@@ -4,7 +4,7 @@
 #' provided data frame.
 #'
 #' @inherit dplyr::mutate
-#' @return Data frame with the extra columns.
+#' @returns Data frame with the extra columns.
 #' @family helper functions
 #' @noRd
 #' @examples
@@ -29,7 +29,7 @@ mutate_if_missing <- function(.data, ...) {
 #' single word, or if the role is `rightsHolder` or `publisher`.
 #'
 #' @param df A data frame with a `title` and `role` column.
-#' @return Data frame with the extra columns.
+#' @returns Data frame with the extra columns.
 #' @family helper functions
 #' @noRd
 #' @examples
@@ -39,10 +39,10 @@ mutate_if_missing <- function(.data, ...) {
 #' )
 #' mutate_person_names(df)
 mutate_person_names <- function(df) {
-  df %>%
+  df |>
     dplyr::mutate(
       n_title = stringr::str_count(.data$title, "\\S+")
-    ) %>%
+    ) |>
     mutate_if_missing(
       firstName = dplyr::if_else(
         !(.data$role %in% c("rightsHolder", "publisher")) & .data$n_title > 1,
@@ -54,7 +54,7 @@ mutate_person_names <- function(df) {
         stringr::str_replace(.data$title, "^\\S* ", ""), # Remove first word
         NA_character_
       )
-    ) %>%
+    ) |>
     dplyr::select(-"n_title")
 }
 
@@ -65,7 +65,7 @@ mutate_person_names <- function(df) {
 #'
 #' @param df A data frame.
 #' @param colnames A character vector of column names.
-#' @return Data frame expanded with columns that were not yet present.
+#' @returns Data frame expanded with columns that were not yet present.
 #' @family helper functions
 #' @noRd
 expand_cols <- function(df, colnames) {
@@ -77,25 +77,25 @@ expand_cols <- function(df, colnames) {
 #' Lists the names of additional resources in a Camera Trap Data Package
 #'
 #' @inheritParams print.camtrapdp
-#' @return Character vector with the additional resource names.
+#' @returns Character vector with the additional resource names.
 #' @family helper functions
 #' @noRd
 additional_resources <- function(x) {
   camtrapdp_resource_names <- c("deployments", "media", "observations")
-  resource_names <- frictionless::resources(x)
+  resource_names <- frictionless::resource_names(x)
   resource_names[!resource_names %in% camtrapdp_resource_names]
 }
 
 #' Create list of contributors in EML format
 #'
 #' @param contributors A data frame returned by `contributors(x)`.
-#' @return List of contributors as `emld::responsibleParty` objects.
+#' @returns List of contributors as `emld::responsibleParty` objects.
 #' @family helper functions
 #' @noRd
 create_eml_contributors <- function(contributors) {
   orcid_regex <- "(\\d{4}-){3}\\d{3}(\\d|X)"
   contributor_list <-
-    contributors %>%
+    contributors |>
     dplyr::mutate(
       # Move ORCID from path to separate column
       orcid = stringr::str_extract(.data$path, orcid_regex),
@@ -104,7 +104,7 @@ create_eml_contributors <- function(contributors) {
         NA_character_,
         .data$path
       )
-    ) %>%
+    ) |>
     purrr::transpose()
   purrr::map(contributor_list, ~ EML::set_responsibleParty(
     givenName = .x$firstName,
@@ -131,7 +131,7 @@ create_eml_contributors <- function(contributors) {
 #' @param x List or vector.
 #' @param fun Function returning `TRUE` for elements that should be removed.
 #' @param recursive Whether list should be cleaned recursively.
-#' @return Cleaned list.
+#' @returns Cleaned list.
 #' @family helper functions
 #' @noRd
 clean_list <- function(x, fun = is.null, recursive = FALSE) {

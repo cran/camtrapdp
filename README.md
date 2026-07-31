@@ -16,7 +16,7 @@ status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repost
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11490269.svg)](https://doi.org/10.5281/zenodo.11490269)
 <!-- badges: end -->
 
-Camtrapdp is an R package to read and manipulate Camera Trap Data
+camtrapdp is an R package to read and manipulate Camera Trap Data
 Packages (Camtrap DP). [Camtrap DP](https://camtrap-dp.tdwg.org) is a
 data exchange format for camera trap data. With camtrapdp you can read,
 filter and transform data (including to [Darwin
@@ -32,18 +32,18 @@ To get started, see:
 
 ## Installation
 
-Install the latest released version from CRAN:
+Install the released version of camtrapdp from CRAN:
 
 ``` r
 install.packages("camtrapdp")
 ```
 
-Or the development version from
-[GitHub](https://github.com/inbo/camtrapdp):
+Or install the development version from [GitHub](https://github.com/)
+with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("inbo/camtrapdp")
+# install.packages("pak")
+pak::pak("inbo/camtrapdp")
 ```
 
 ## Usage
@@ -94,10 +94,10 @@ observations on scientific name(s) and return the associated events in
 that subset:
 
 ``` r
-x %>%
+x |>
   filter_observations(
     scientificName %in% c("Martes foina", "Mustela putorius")
-  ) %>%
+  ) |>
   events()
 #> # A tibble: 4 × 4
 #>   deploymentID eventID  eventStart          eventEnd           
@@ -128,9 +128,8 @@ for details.
   [contributions](https://inbo.github.io/camtrapdp/CONTRIBUTING.html)
   including bug reports.
 - License: MIT
-- Get [citation
-  information](https://inbo.github.io/camtrapdp/authors.html#citation)
-  for camtrapdp in R doing `citation("camtrapdp")`.
+- Get citation information for camtrapdp in R with
+  `citation("camtrapdp")`.
 - Please note that this project is released with a [Contributor Code of
   Conduct](https://inbo.github.io/camtrapdp/CODE_OF_CONDUCT.html). By
   participating in this project you agree to abide by its terms.

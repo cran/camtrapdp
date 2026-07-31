@@ -16,7 +16,7 @@
 #' @param deployment_id One or more deploymentIDs.
 #' @param duration Difference between the current and new date-times.
 #'   Provide as a [lubridate::duration()] or [difftime].
-#' @return `x` with shifted date-times.
+#' @returns `x` with shifted date-times.
 #' @family transformation functions
 #' @export
 #' @examples
@@ -67,14 +67,14 @@ shift_time <- function(x, deployment_id, duration) {
 
   # Get current deploymentStart of first selected deployment (used in message)
   current_datetime <-
-    deployments(x) %>%
-    dplyr::filter(.data$deploymentID == deployment_id[1]) %>%
+    deployments(x) |>
+    dplyr::filter(.data$deploymentID == deployment_id[1]) |>
     dplyr::pull(.data$deploymentStart)
 
   # Shift deploymentStart and deploymentEnd of selected deployments
   # And set timestampIssues to FALSE
   deployments(x) <-
-    deployments(x) %>%
+    deployments(x) |>
     dplyr::mutate(
       deploymentStart = dplyr::if_else(
         .data$deploymentID %in% deployment_id,
@@ -95,7 +95,7 @@ shift_time <- function(x, deployment_id, duration) {
 
   # Shift timestamp of associated media
   media(x) <-
-    media(x) %>%
+    media(x) |>
     dplyr::mutate(
       timestamp = dplyr::if_else(
         .data$deploymentID %in% deployment_id,
@@ -106,7 +106,7 @@ shift_time <- function(x, deployment_id, duration) {
 
   # Shift eventStart and eventEnd of associated observations
   observations(x) <-
-    observations(x) %>%
+    observations(x) |>
     dplyr::mutate(
       eventStart = dplyr::if_else(
         .data$deploymentID %in% deployment_id,
@@ -125,8 +125,8 @@ shift_time <- function(x, deployment_id, duration) {
 
   # Get new deploymentStart of first selected deployment (used in message)
   new_datetime <-
-    deployments(x) %>%
-    dplyr::filter(.data$deploymentID == deployment_id[1]) %>%
+    deployments(x) |>
+    dplyr::filter(.data$deploymentID == deployment_id[1]) |>
     dplyr::pull(.data$deploymentStart)
 
   # Return message

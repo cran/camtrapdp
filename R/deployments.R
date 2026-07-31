@@ -11,7 +11,7 @@
 #' deployments.
 #'
 #' @inheritParams print.camtrapdp
-#' @return A [tibble::tibble()] data frame with deployments.
+#' @returns A [tibble::tibble()] data frame with deployments.
 #' @family accessor functions
 #' @export
 #' @examples
@@ -41,8 +41,8 @@ deployments <- function(x) {
 
   # Update spatial and temporal scope in metadata
   x <-
-    x %>%
-    update_spatial() %>%
+    x |>
+    update_spatial() |>
     update_temporal()
 
   return(x)

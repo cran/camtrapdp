@@ -4,7 +4,7 @@
 #' properties.
 #'
 #' @inheritParams print.camtrapdp
-#' @return `x` invisibly or an error.
+#' @returns `x` invisibly or an error.
 #' @family check functions
 #' @export
 #' @examples
@@ -20,7 +20,7 @@ check_camtrapdp <- function(x) {
   frictionless::check_package(x)
 
   # Check if class is present
-  if (!("camtrapdp" %in% class(x))) {
+  if (!inherits(x, "camtrapdp")) {
     cli::cli_abort(
       c(
         general_message,

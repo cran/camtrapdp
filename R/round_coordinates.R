@@ -8,7 +8,7 @@
 #' @inheritParams print.camtrapdp
 #' @param digits Number of decimal places to round coordinates to (`1`, `2` or
 #'   `3`).
-#' @return `x` with chosen `coordinatePrecision` in metadata and rounded
+#' @returns `x` with chosen `coordinatePrecision` in metadata and rounded
 #'   coordinates and calculated `coordinateUncertainty` in deployments.
 #' @family transformation functions
 #' @export
@@ -81,7 +81,7 @@
 round_coordinates <- function(x, digits) {
   if (is.null(digits) || !(digits %in% c(1, 2, 3))) {
     cli::cli_abort(
-      c("{.arg digits} must be {.val 1}, {.val 2} or {.val 3}."),
+      "{.arg digits} must be {.val 1}, {.val 2} or {.val 3}.",
       class = "camtrapdp_error_digits_invalid"
     )
   }
@@ -103,11 +103,11 @@ round_coordinates <- function(x, digits) {
     }
   } else {
     original_digits <-
-      deployments(x) %>%
+      deployments(x) |>
       dplyr::mutate(
         lat_digits = nchar(stringr::str_remove(.data$latitude, "^\\d*\\."))
-      ) %>%
-      dplyr::summarize(max(.data$lat_digits)) %>%
+      ) |>
+      dplyr::summarize(max(.data$lat_digits)) |>
       dplyr::pull()
     if (digits >= original_digits) {
       cli::cli_abort(
@@ -136,7 +136,7 @@ round_coordinates <- function(x, digits) {
 
   # Update longitude, latitude and coordinateUncertainty
   deployments(x) <-
-    deployments(x) %>%
+    deployments(x) |>
     dplyr::mutate(
       latitudeGroup = dplyr::case_when(
         abs(latitude) >= 85 ~ "lat_85",
@@ -164,7 +164,7 @@ round_coordinates <- function(x, digits) {
             - .data$oldRoundingUncertainty
             + .data$roundingUncertainty
         )
-    ) %>%
+    ) |>
     dplyr::select(
       -"latitudeGroup", -"roundingUncertainty", -"oldRoundingUncertainty"
       )

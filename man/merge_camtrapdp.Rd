@@ -76,20 +76,20 @@ Metadata properties are merged as follows:
 }
 
 \examples{
-x <- example_dataset() \%>\%
+x <- example_dataset() |>
   filter_deployments(deploymentID \%in\% c("00a2c20d", "29b7d356"))
-y <- example_dataset() \%>\%
+y <- example_dataset() |>
   filter_deployments(deploymentID \%in\% c("577b543a", "62c200a9"))
 x$name <- "x"
 y$name <- "y"
 merge_camtrapdp(x, y)
 }
 \seealso{
-Other transformation functions: 
-\code{\link{round_coordinates}()},
-\code{\link{shift_time}()},
-\code{\link{update_taxon}()},
-\code{\link{write_dwc}()},
-\code{\link{write_eml}()}
+Other transformation functions:
+\code{\link[=round_coordinates]{round_coordinates()}},
+\code{\link[=shift_time]{shift_time()}},
+\code{\link[=update_taxon]{update_taxon()}},
+\code{\link[=write_dwc]{write_dwc()}},
+\code{\link[=write_eml]{write_eml()}}
 }
 \concept{transformation functions}

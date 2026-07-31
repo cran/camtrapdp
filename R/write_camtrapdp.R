@@ -7,7 +7,7 @@
 #' @param directory Path to local directory to write files to.
 #' @param ... Further arguments, passed to [frictionless::write_package()]
 #'   (e.g. `compress = TRUE`).
-#' @return `datapackage.json` and CSV files written to disk.
+#' @returns `datapackage.json` and CSV files written to disk.
 #' @family write functions
 #' @export
 #' @examples
@@ -29,13 +29,13 @@ write_camtrapdp <- function(x, directory, ...) {
 
   # Remove columns and duplicates that were added by read_camtrapdp()
   media(x) <-
-    media(x) %>%
-    dplyr::select(-"eventID") %>%
+    media(x) |>
+    dplyr::select(-"eventID") |>
     dplyr::distinct()
   # Do not use assign function for observations because it would update
   # x$taxonomic without the "taxon."-terms
   x$data$observations <-
-    observations(x) %>%
+    observations(x) |>
     dplyr::select(-dplyr::starts_with("taxon."))
 
   # Update resources
@@ -46,12 +46,9 @@ write_camtrapdp <- function(x, directory, ...) {
       x,
       resource_name = resource_name,
       data = x$data[[resource_name]],
-      schema = ,
+      schema = schema,
       replace = TRUE,
-      )
-    # Hack to circumvent that add_resource() adds schema verbosely
-    resource_index <- purrr::detect_index(x$resources, ~ .x$name == resource_name)
-    x$resources[[resource_index]]$schema <- schema
+    )
   }
 
   # Remove data
@@ -60,12 +57,12 @@ write_camtrapdp <- function(x, directory, ...) {
   # Remove elements that are NA or empty list
   x$taxonomic <- clean_list(
     x$taxonomic,
-    function(x) any(is.na(x)) || length(x) == 0L,
+    function(x) anyNA(x) || length(x) == 0L,
     recursive = TRUE
   )
   x$contributors <- clean_list(
     x$contributors,
-    function(x) any(is.na(x)) || length(x) == 0L,
+    function(x) anyNA(x) || length(x) == 0L,
     recursive = TRUE
   )
 

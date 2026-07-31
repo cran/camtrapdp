@@ -5,7 +5,7 @@
 #'
 #' @param x,y Camera Trap Data Package objects, as returned by
 #'  [read_camtrapdp()].
-#' @return A single Camera Trap Data Package object that is the combination of
+#' @returns A single Camera Trap Data Package object that is the combination of
 #'   `x` and `y`.
 #' @family transformation functions
 #' @export
@@ -58,9 +58,9 @@
 #' - **references**: Combined, with duplicates removed.
 #' - Custom properties of `x` are also retained.
 #' @examples
-#' x <- example_dataset() %>%
+#' x <- example_dataset() |>
 #'   filter_deployments(deploymentID %in% c("00a2c20d", "29b7d356"))
-#' y <- example_dataset() %>%
+#' y <- example_dataset() |>
 #'   filter_deployments(deploymentID %in% c("577b543a", "62c200a9"))
 #' x$name <- "x"
 #' y$name <- "y"
@@ -150,11 +150,11 @@ merge_camtrapdp <- function(x, y) {
     max(x$coordinatePrecision, y$coordinatePrecision, na.rm = TRUE)
   xy$relatedIdentifiers <- unique(c(x$relatedIdentifiers, y$relatedIdentifiers))
   xy$references <- unique(c(x$references, y$references))
-  xy$directory <- "."
+  attr(xy, "directory") <- "."
 
   # Add package$id to related identifiers if it is a DOI
   add_related_id <- function(id, related_ids) {
-    if (grepl("doi", id %||% "")) {
+    if (grepl("doi", id %||% "", fixed = TRUE)) {
       new_related_id <- list(
         relationType = "isDerivedFrom",
         relatedIdentifier = id,

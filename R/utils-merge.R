@@ -6,7 +6,7 @@
 #' @param a,b Character vectors.
 #' @param prefixes Prefixes (e.g. `c("a", "b")`) to add to `a` and `b` values
 #'   respectively, as `<prefix>_<value>`.
-#' @return `c(a, b)` with prefixed duplicates.
+#' @returns `c(a, b)` with prefixed duplicates.
 #' @family helper functions
 #' @noRd
 #' @examples
@@ -32,7 +32,7 @@ merge_vectors <- function(a, b, prefixes) {
 #' Resource names that occur in both `x` and `y` get a prefix.
 #' @inheritParams merge_camtrapdp
 #' @param prefixes Prefixes (e.g. `c("x", "y")`) to add to duplicate values.
-#' @return A list with resources.
+#' @returns A list with resources.
 #' @family helper functions
 #' @noRd
 merge_resources <- function(x, y, prefixes) {
@@ -60,13 +60,13 @@ merge_resources <- function(x, y, prefixes) {
 #' Values in `deploymentID` that occur in both `x` and `y` get a prefix.
 #' @inheritParams merge_camtrapdp
 #' @param prefixes Prefixes (e.g. `c("x", "y")`) to add to duplicate values.
-#' @return A [tibble::tibble()] data frame with deployments.
+#' @returns A [tibble::tibble()] data frame with deployments.
 #' @family helper functions
 #' @noRd
 merge_deployments <- function(x, y, prefixes) {
   x_deployments <- deployments(x)
   y_deployments <- deployments(y)
-  dplyr::bind_rows(x_deployments, y_deployments) %>%
+  dplyr::bind_rows(x_deployments, y_deployments) |>
     dplyr::mutate(
       deploymentID = merge_vectors(
         purrr::chuck(x_deployments, "deploymentID"),
@@ -83,13 +83,13 @@ merge_deployments <- function(x, y, prefixes) {
 #' `y` get a prefix.
 #' @inheritParams merge_camtrapdp
 #' @param prefixes Prefixes (e.g. `c("x", "y")`) to add to duplicate values.
-#' @return A [tibble::tibble()] data frame with media.
+#' @returns A [tibble::tibble()] data frame with media.
 #' @family helper functions
 #' @noRd
 merge_media <- function(x, y, prefixes) {
   x_media <- media(x)
   y_media <- media(y)
-  dplyr::bind_rows(x_media, y_media) %>%
+  dplyr::bind_rows(x_media, y_media) |>
     dplyr::mutate(
       mediaID = merge_vectors(
         purrr::chuck(x_media, "mediaID"),
@@ -116,13 +116,13 @@ merge_media <- function(x, y, prefixes) {
 #' in both `x` and `y` get a prefix.
 #' @inheritParams merge_camtrapdp
 #' @param prefixes Prefixes (e.g. `c("x", "y")`) to add to duplicate values.
-#' @return A [tibble::tibble()] data frame with observations.
+#' @returns A [tibble::tibble()] data frame with observations.
 #' @family helper functions
 #' @noRd
 merge_observations <- function(x, y, prefixes) {
   x_observations <- observations(x)
   y_observations <- observations(y)
-  dplyr::bind_rows(x_observations, y_observations) %>%
+  dplyr::bind_rows(x_observations, y_observations) |>
     dplyr::mutate(
       observationID = merge_vectors(
         purrr::chuck(x_observations, "observationID"),

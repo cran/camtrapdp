@@ -5,7 +5,7 @@
 #' Only observations with `observationLevel == "event"` are considered.
 #'
 #' @inheritParams print.camtrapdp
-#' @return A [tibble::tibble()] data frame with the events, containing the
+#' @returns A [tibble::tibble()] data frame with the events, containing the
 #'   following columns:
 #'   - `deploymentID`
 #'   - `eventID`
@@ -18,8 +18,8 @@
 #' events(x)
 events <- function(x) {
   check_camtrapdp(x)
-  observations(x) %>%
-    dplyr::filter(.data$observationLevel == "event") %>%
+  observations(x) |>
+    dplyr::filter(.data$observationLevel == "event") |>
     dplyr::distinct(
       .data$deploymentID,
       .data$eventID,
