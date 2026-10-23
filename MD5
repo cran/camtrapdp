@@ -1,11 +1,12 @@
-1e65bc863129022dc935940a9b0c65bd *DESCRIPTION
+5186a53d9412ae46fdf20f9fb575197c *DESCRIPTION
 990f57a8914708e195b73f15b9ea5391 *LICENSE
 acdcc16522786553fb56b5a6d2dbec7b *NAMESPACE
-0c9135380eb15ba6dd139f8af9233e5c *NEWS.md
+52f46d4dee3a507ae43886de47b82790 *NEWS.md
 7150b48a511fd4646049241e6e0d6918 *R/camtrapdp-package.R
 97b7253be4aed2590d8937de60d5a122 *R/check_camtrapdp.R
 656bd7553e932c8dd7c630cbd8dc8cbd *R/contributors.R
 40230292df6832ed61ebd7a8ae1dafd9 *R/deployments.R
+a4485fb19874ff243a0b0925f792c105 *R/downgrade_package.R
 54467441e2cf0716c586ffc68654077f *R/events.R
 792332d8fcb68e9100f80d5045f786a4 *R/example_dataset.R
 47a17565edb380236aa8db2cdaa624f8 *R/filter_deployments.R
@@ -28,7 +29,7 @@ c34369827a9a525cca9006935debe815 *R/update_taxon.R
 bebcf0fed6f7e6273674a9d457d3e027 *R/utils-merge.R
 a88b8dc98e3534c27be32d76a625c0e6 *R/utils.R
 9a0bc50f6e07d5f51028202db13c9773 *R/version.R
-49e22b1a2f29ac58e4beffbc8fdd85e1 *R/write_camtrapdp.R
+4cf268ce6819f98d794d18e3f6cf3185 *R/write_camtrapdp.R
 5d07228432679766b9d368073996c6b3 *R/write_dwc.R
 d483172d0e24732a81ace2f6a21994e9 *R/write_eml.R
 4a01fda51894721c3a271934d829c20b *README.md
@@ -90,6 +91,6 @@ af8a0f909becf1e5f368e0b7835bbd20 *tests/testthat/test-taxa.R
 afef567df5a575e7f532c7c3f67a852a *tests/testthat/test-taxonomic.R
 be50cfd1803af0f3e9d93e0a7454db30 *tests/testthat/test-update_taxon.R
 2bf79434bb68208b85a0ddec1f773bc7 *tests/testthat/test-version.R
-82877a2b22e0cde60bcc2b96859b3d4b *tests/testthat/test-write_camtrapdp.R
+76c5b158435ff2135286f65d79699a63 *tests/testthat/test-write_camtrapdp.R
 ad260501717cde159b82d3efedfaab77 *tests/testthat/test-write_dwc.R
 52560b4ef725696c708d6247b72b3d94 *tests/testthat/test-write_eml.R
